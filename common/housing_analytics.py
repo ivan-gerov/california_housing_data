@@ -34,7 +34,17 @@ split_train_test_by_id(housing_with_id,
                         test_ratio= 0.2,
                         id_column = 'index')
 
-def test_set_check2(identifier, test_ratio, hash):
-    return hash(np.int64(identifier)).digest()[0] #< 256 * test_ratio
-                    
-print(test_set_check2(np.int64(102), 0.2, hashlib.md5))
+
+housing['income_cat'] = np.ceil(housing['median_income'] / 1.5)
+housing['income_cat'].where(housing['income_cat'] < 5, 5.0, inplace= True)
+
+from sklearn.sklearn.model_selection import StratifiedShuffleSplit
+
+split = StratifiedShuffleSplit(n_splits= 1,
+                                test_size= 0.2,
+                                random_state= 42)
+for train_index, test_index in split.split(housing, housing['income_cat']):
+    strat_train_set = housing.loc[train_index]
+    strat_test_set = housing.loc[test_index]
+
+                                
